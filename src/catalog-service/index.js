@@ -15,9 +15,7 @@ client.get = util.promisify(client.get);
 client.on("error", (err) => {
   console.error(`Redis Error: ${err}`);
 });
-///////////////////////////////////////////
-/////////////////////////////////////
-///////////////////////////////////
+
 
 const app = express();
 const port = 3005;
@@ -147,7 +145,7 @@ app.get('/search/:bookTopic',async (req, res) => {
        
       }
 
-      client.set(`${bookTopic}`,JSON.stringify(row), "EX", 4)
+      client.set(`${bookTopic}`,JSON.stringify(row))
       // console.log(row);
       res.send({items:row});
     });
@@ -158,35 +156,45 @@ app.get('/info/:id',async (req, res) => {
   let id = req.params.id;
   console.log(id);
   const cachedPost = await client.get(`${id}`)
-  if(cachedPost){
-    return res.json(JSON.parse(cachedPost))
-  }
+  // console.log(cachedPost)
+  /////////////////////////////
   db.serialize(() => {
     // i used serialize to solve of close data base for data displayed completely
-    db.all(`SELECT id,numberOfItems,bookCost FROM items WHERE id=${id}`, (err, row) => {
+    db.all(`SELECT id,numberOfItems,bookCost FROM items WHERE id=${id}`,async (err, row) => {
       if (err) {
         console.log(err);
         return;
       }
-      client.set(`${id}`,JSON.stringify(row[0]), "EX", 360)
+      if(cachedPost){
+        let temp = JSON.parse(cachedPost)
+        console.log(row[0].numberOfItems,"--")
+        console.log(temp.numberOfItems,"--")
+        if(row[0].numberOfItems == temp.numberOfItems)
+          return res.json(JSON.parse(cachedPost))
+        else{
+          client.del(`${id}`)
+          return res.json({Message:"Invalidate"})
+        }
+      }
+      client.set(`${id}`,JSON.stringify(row[0]))
       console.log(row);
       res.json({item:row});
     });
   });
 });
 
-app.get("/posts/:id",async (req,res)=>{
-  const id = req.params.id;
-  console.log(id)
-  const cachedPost = await client.get(`post-${id}`)
-  if(cachedPost){
-    return res.json(JSON.parse(cachedPost))
-  }
-  const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`);
-  client.set(`post-${id}`,JSON.stringify(response.data), "EX", 360) // EX --> refer to Expire ,  5 --> refer to 5 seconds
+// app.get("/posts/:id",async (req,res)=>{
+//   const id = req.params.id;
+//   console.log(id)
+//   const cachedPost = await client.get(`post-${id}`)
+//   if(cachedPost){
+//     return res.json(JSON.parse(cachedPost))
+//   }
+//   const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`);
+//   client.set(`post-${id}`,JSON.stringify(response.data), "EX", 360) // EX --> refer to Expire ,  5 --> refer to 5 seconds
 
-  res.json(response.data)
-})
+//   res.json(response.data)
+// })
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
