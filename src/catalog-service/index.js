@@ -4,6 +4,17 @@ const db = new sqlite3.Database('database.db');
 const axios = require("axios")
 const path = require('path');
 const cors = require("cors")
+const redis = require('redis');
+const util = require("util")
+
+const client = redis.createClient(6379,"redis");
+client.set = util.promisify(client.set);
+client.get = util.promisify(client.get);
+
+// Handle Redis client errors
+client.on("error", (err) => {
+  console.error(`Redis Error: ${err}`);
+});
 
 const app = express();
 const port = 3005;
@@ -109,9 +120,14 @@ db.serialize(() => {
   // [4,"Undergraduate School", 21, 900, 'Cooking for the Impatient Undergrad']
 });
 
-app.get('/search/:bookTopic', (req, res) => {
+app.get('/search/:bookTopic',async (req, res) => {
   let bookTopic = req.params.bookTopic.trim();
   console.log(bookTopic);
+  const cachedPost = await client.get(`${bookTopic}`)
+  console.log(cachedPost,"---")
+  if(cachedPost){
+    return res.json(JSON.parse(cachedPost))
+  }
   db.serialize(() => {
     db.all(`SELECT * FROM items WHERE bookTopic="${bookTopic}"`, (err, row) => {
       if (err) {
@@ -125,16 +141,23 @@ app.get('/search/:bookTopic', (req, res) => {
           row[i].bookCost,
           row[i].bookTopic
         );
+       
       }
+
+      client.set(`${bookTopic}`,JSON.stringify(row), "EX", 4)
       // console.log(row);
       res.send({items:row});
     });
   });
 });
 
-app.get('/info/:id', (req, res) => {
+app.get('/info/:id',async (req, res) => {
   let id = req.params.id;
   console.log(id);
+  const cachedPost = await client.get(`${id}`)
+  if(cachedPost){
+    return res.json(JSON.parse(cachedPost))
+  }
   db.serialize(() => {
     // i used serialize to solve of close data base for data displayed completely
     db.all(`SELECT id,numberOfItems,bookCost FROM items WHERE id=${id}`, (err, row) => {
@@ -142,12 +165,25 @@ app.get('/info/:id', (req, res) => {
         console.log(err);
         return;
       }
-
+      client.set(`${id}`,JSON.stringify(row[0]), "EX", 360)
       console.log(row);
       res.json({item:row});
     });
   });
 });
+
+app.get("/posts/:id",async (req,res)=>{
+  const id = req.params.id;
+  console.log(id)
+  const cachedPost = await client.get(`post-${id}`)
+  if(cachedPost){
+    return res.json(JSON.parse(cachedPost))
+  }
+  const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`);
+  client.set(`post-${id}`,JSON.stringify(response.data), "EX", 360) // EX --> refer to Expire ,  5 --> refer to 5 seconds
+
+  res.json(response.data)
+})
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
