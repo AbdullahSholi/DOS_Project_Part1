@@ -27,6 +27,10 @@ app.post("/purch",async (req,res)=>{
   }
 })
 
+app.get("/test",(req,res)=>{
+  res.send({Message:"Arrive"})
+})
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
