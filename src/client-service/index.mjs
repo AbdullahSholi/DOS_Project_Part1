@@ -41,6 +41,23 @@ import inquirer from 'inquirer';
 import fs from 'fs';
 import axios from "axios"
 
+let counterFilePath = './counter.txt';
+
+// Function to read the counter value from a file
+function readCounter() {
+  try {
+    return parseInt(fs.readFileSync(counterFilePath, 'utf8')) || 1;
+  } catch (error) {
+    return 1;
+  }
+}
+
+// Function to write the counter value to a file
+function writeCounter(counter) {
+  fs.writeFileSync(counterFilePath, counter.toString(), 'utf8');
+}
+
+let counter = readCounter();
 
   const program = new Command();
   program.name('CLI').description('CLI for DOS Project').version('1.0.0');
@@ -69,7 +86,7 @@ import axios from "axios"
     message: 'Enter amount of money to pay:  ',
   },
 ]
-  
+
   program
     .command('search-book-title')
     .alias('s')
@@ -103,9 +120,22 @@ import axios from "axios"
       inquirer
         .prompt(questionInfo)
         .then(async (answers) => {
+          
           try {
-            const result = await axios.get(`http://localhost:8083/catalog-server/info/${answers.itemNumber}`);
-            console.log('Response Data:', result.data);
+            if(counter%2==1){
+              counter++;
+              writeCounter(counter);
+              const result = await axios.get(`http://localhost:8083/catalog-server/info/${answers.itemNumber}`);
+              console.log('Response Data:', result.data);
+              console.log(counter);
+            } else{
+              counter++;
+              writeCounter(counter);
+              const result1 = await axios.get(`http://localhost:8083/catalog-server-replica/info/${answers.itemNumber}`);
+              console.log('Response Data:', result1.data);
+              // console.log(result1)
+              console.log(counter);
+            }
           } catch (error) {
             console.error('Error during request:', error.message);
           }
