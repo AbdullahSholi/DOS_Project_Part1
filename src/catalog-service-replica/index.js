@@ -1,11 +1,13 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('database.db');
+
 const axios = require("axios")
 const path = require('path');
 const cors = require("cors")
 const redis = require('redis');
 const util = require("util")
+
 
 const client = redis.createClient(6379,"redis");
 client.set = util.promisify(client.set);
