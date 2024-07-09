@@ -1,0 +1,2 @@
+New Command for run project:
+docker-compose up -d --scale catalog-server=2 --scale order-server=2 --scale client=2
