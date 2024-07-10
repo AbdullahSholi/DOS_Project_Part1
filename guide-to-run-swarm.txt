@@ -1,0 +1,17 @@
+
+// For push image to docker hub ( In the first you need create repository for each service on the Docker Hub )
+docker logout 
+docker login
+docker build -t abdullahsholi/order-service:latest .
+docker tag order-service:latest abdullah-sholi/order-service:latest
+docker push abdullahsholi/order-service:latest
+
+// Connect with SWARM
+docker swarm init // Swarm Initialization
+docker stack deploy -c docker-compose.yml DOS_Project_Stack // Deploy Our project with Swarm
+docker stack services DOS_Project_Stack   // Display all services 
+docker service DOS_Project_Stack_order-server=3 // To Scale our services( Create number of replicas of specific service )
+docker stack rm DOS_Project_Stack // For remove our Stack
+
+
+
