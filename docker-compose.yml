@@ -11,7 +11,6 @@ services:
       - ./src/nginx:/app/src/nginx:ro
       - ./src/catalog-service/database.db:/app/database.db:rw
     environment:
-      - PORT=3000
       - NODE_ENV=production
     deploy:
       replicas: 2
@@ -29,7 +28,6 @@ services:
       - ./src/order-service:/app/src/order-service:ro
       - ./src/nginx:/app/src/nginx:ro
     environment:
-      - PORT=3000
       - NODE_ENV=production
     deploy:
       replicas: 2
@@ -44,8 +42,6 @@ services:
       context: .
     volumes:
       - ./src/client-service:/app/src/client-service:ro
-    environment:
-      - PORT=3000
     deploy:
       replicas: 2
       update_config:
