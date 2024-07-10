@@ -1,7 +1,8 @@
-version: '3'
+version: '3.8'
 
 services:
   catalog-server:
+    image: catalog-service
     build:
       context: .
       target: production
@@ -10,15 +11,17 @@ services:
       - ./src/nginx:/app/src/nginx:ro
       - ./src/catalog-service/database.db:/app/database.db:rw
     environment:
-      - PORT=3005
+      - PORT=3000
       - NODE_ENV=production
     deploy:
       replicas: 2
       update_config:
         parallelism: 2
         delay: 10s
+      endpoint_mode: dnsrr
 
   order-server:
+    image: order-service
     build:
       context: .
       target: production1
@@ -26,26 +29,29 @@ services:
       - ./src/order-service:/app/src/order-service:ro
       - ./src/nginx:/app/src/nginx:ro
     environment:
-      - PORT=3006
-      - NODE_ENV=production1
+      - PORT=3000
+      - NODE_ENV=production
     deploy:
       replicas: 2
       update_config:
         parallelism: 2
         delay: 10s
+      endpoint_mode: dnsrr
 
   client:
+    image: client-service
     build:
       context: .
     volumes:
       - ./src/client-service:/app/src/client-service:ro
     environment:
-      - PORT=3007
+      - PORT=3000
     deploy:
       replicas: 2
       update_config:
         parallelism: 2
         delay: 10s
+      endpoint_mode: dnsrr
 
   nginx:
     image: nginx:stable-alpine
