@@ -113,7 +113,7 @@ node index.mjs s
 
 ## Wiki Pages
 
-- [Home](https://github.com/AbdullahSholi/DOS_Project_Part1): Home page
+- [Home](https://github.com/AbdullahSholi/DOS_Project_Part1/wiki): Home page
 - [API Documentation](https://github.com/AbdullahSholi/DOS_Project_Part1/wiki/API-Documentation): Explore the API endpoints and usage documentation.
 - [Installation](https://github.com/AbdullahSholi/DOS_Project_Part1/wiki/Installation-Guide): Get started with setting up Bazar.com: A Multi-tier Online Book Store API on your local machine.
 - [Tools and Technologies Used](https://github.com/AbdullahSholi/DOS_Project_Part1/wiki/Tools-and-Technologies): Explore the tools and technologies used in the development of the Bazar.com: A Multi-tier Online Book Store API.
