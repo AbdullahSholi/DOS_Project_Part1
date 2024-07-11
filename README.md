@@ -114,7 +114,7 @@ node index.mjs s
 ## Wiki Pages
 
 - [Home](https://github.com/AbdullahSholi/DOS_Project_Part1): Home page
-- [API Documentation](https://github.com/AbdullahSholi/Advanced_Software_Engineering_Project/wiki/API-Documentation): Explore the API endpoints and usage documentation.
+- [API Documentation](https://github.com/AbdullahSholi/DOS_Project_Part1/wiki/API-Documentation): Explore the API endpoints and usage documentation.
 - [Installation](https://github.com/AbdullahSholi/Advanced_Software_Engineering_Project/wiki/Installation-Guide): Get started with setting up Bazar.com: A Multi-tier Online Book Store API on your local machine.
 - [Developer Guide](https://github.com/AbdullahSholi/Advanced_Software_Engineering_Project/wiki/Developer-Guide): Learn about the Repo and how to contribute to the Bazar.com: A Multi-tier Online Book Store API project.
 - [Tools and Technologies Used](https://github.com/AbdullahSholi/Advanced_Software_Engineering_Project/wiki/Tools-and-Technologies): Explore the tools and technologies used in the development of the Bazar.com: A Multi-tier Online Book Store API.
